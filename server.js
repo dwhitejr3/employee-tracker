@@ -16,7 +16,7 @@ function getEmployees() {
     if (err) {
       console.error(err);
     }
-    console.log(data)
+    console.table(data.rows);
 
     questions();
 
@@ -25,7 +25,7 @@ function getEmployees() {
 }
 
 function addEmployee() {
-  // const sql = `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES($1,$2,$3,$4);`
+  const sql = `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES($1,$2,$3,$4);`
 
 
   inquirer
@@ -84,20 +84,30 @@ function addEmployee() {
 
 
       }
+      switch (options.manager) {
+        case 'Lebron James':
+          options.manager = 1
+          break;
+
+        case 'Tim Duncan':
+          options.manager = 2
+          break;
+
+
+
+      }
       console.log(options.role);
+      console.log(options.manager);
 
+      const sql = `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES($1,$2,$3,$4);`
+      const params = [options.firstName, options.lastName,
+      options.role, options.manager];
 
-
-
-
-
-
-
-      pool.query(sql, (err, data) => {
+      pool.query(sql, params, (err, data) => {
         if (err) {
           console.error(err);
         }
-        console.log(`${data} has been added to the list of employyes`)
+        console.log(`${options.firstName} has been added to the list of employees`)
 
         questions();
 
@@ -107,12 +117,12 @@ function addEmployee() {
 }
 
 function getRoles() {
-  const sql = `SELECT * FROM roles;`
+  const sql = `SELECT * FROM role;`
   pool.query(sql, (err, data) => {
     if (err) {
       console.error(err);
     }
-    console.log(data)
+    console.table(data.rows);
 
     questions();
 
@@ -138,7 +148,7 @@ function getDepartments() {
     if (err) {
       console.error(err);
     }
-    console.log(data)
+    console.table(data.rows);
 
     questions();
 
@@ -147,15 +157,27 @@ function getDepartments() {
 }
 
 function addDepartment() {
-  const sql = `INSERT INTO department (department_name)`
-  pool.query(sql, (err, data) => {
-    if (err) {
-      console.error(err);
-    }
-    console.log(`${data} has been added to the list of departmnets`)
+  const sql = `INSERT INTO departments (department_name) VALUES($1)`
 
-    questions();
-  })
+  inquirer
+    .prompt([
+      {
+        type: 'input',
+        name: 'department',
+        message: 'What is the name of the department?'
+      },
+    ])
+    .then((options) => {
+
+      pool.query(sql, (err, data) => {
+        if (err) {
+          console.error(err);
+        }
+        console.log(`${data} has been added to the list of departmnets`)
+
+        questions();
+      })
+    })
 }
 
 function questions() {
@@ -212,3 +234,9 @@ function questions() {
 }
 
 questions();
+
+
+
+
+
+
