@@ -12,6 +12,9 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",
-    "inquirer": "^8.2.4"
+    "inquirer": "^8.2.4",
+    "pg": "^8.11.3",
+    "dotenv": "^8.2.0",
+    "sequelize": "^6.3.5"
   }
 }
