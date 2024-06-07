@@ -10,8 +10,9 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+// this function is for the view all employees promt. its grabbing info from employees table
 function getEmployees() {
-  const sql = `SELECT * FROM employees`
+  const sql = `SELECT * FROM employees;`
   pool.query(sql, (err, data) => {
     if (err) {
       console.error(err);
@@ -23,11 +24,11 @@ function getEmployees() {
 
   })
 }
-
+// this function is for the add employee prompt
 function addEmployee() {
   const sql = `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES($1,$2,$3,$4);`
 
-
+// inquirer prompt is asking questions for the user to answer
   inquirer
     .prompt([
       {
@@ -96,9 +97,9 @@ function addEmployee() {
 
 
       }
-      console.log(options.role);
-      console.log(options.manager);
-
+      // console.log(options.role);
+      // console.log(options.manager);
+      // This block is adding an employee to the database and console logging it based on what was entered in above
       const sql = `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES($1,$2,$3,$4);`
       const params = [options.firstName, options.lastName,
       options.role, options.manager];
@@ -131,16 +132,59 @@ function getRoles() {
 }
 
 function addRole() {
-  const sql = `INSERT INTO role (role_title)`
-  pool.query(sql, (err, data) => {
+
+  inquirer
+    .prompt([
+      {
+        type: 'input',
+        name: 'title',
+        message: 'What is title of the role?'
+      },
+      {
+        type: 'input',
+        name: 'salary',
+        message: 'What is the salary of the role? **NUMBERS ONLY**'
+      },
+      {
+        type: 'list',
+        name: 'department',
+        message: 'Which department will this role be in ?',
+        choices: ['Customer Service', 'Deli', 'Bakery', 'Management']
+      }
+      
+
+
+    ])
+    .then((options) => {
+      switch (options.department) {
+        case 'Customer Service':
+          options.department = 1
+          break;
+          
+          case 'Deli':
+          options.department = 2
+          break; 
+
+          case 'Bakery':
+          options.department = 3
+          break; 
+
+          case 'Management':
+            options.department = 4
+            break; 
+      }
+
+    const sql = `INSERT INTO role (title, salary, department_id) VALUES($1,$2,$3);`
+    const params =[options.title, options.salary, options.department];
+  pool.query(sql, params, (err, data) => {
     if (err) {
       console.error(err);
     }
-    console.log(`${data} has been added to the list of roles`)
+    console.log(`${options.title} has been added to the list of roles`)
 
     questions();
   })
-}
+})}
 
 function getDepartments() {
   const sql = `SELECT * FROM departments`
@@ -157,8 +201,7 @@ function getDepartments() {
 }
 
 function addDepartment() {
-  const sql = `INSERT INTO departments (department_name) VALUES($1)`
-
+  
   inquirer
     .prompt([
       {
@@ -168,12 +211,14 @@ function addDepartment() {
       },
     ])
     .then((options) => {
+      const params = [options.department];
+      const sql = `INSERT INTO departments (department_name) VALUES($1);`
 
-      pool.query(sql, (err, data) => {
+      pool.query(sql ,params, (err, data) => {
         if (err) {
           console.error(err);
         }
-        console.log(`${data} has been added to the list of departmnets`)
+        console.log(`${options.department} has been added to the list of departmnets`)
 
         questions();
       })
